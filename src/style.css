@@ -1,0 +1,572 @@
+/* ─── Variables ──────────────────────────── */
+:root {
+  --bg-app: #f4f1eb;
+  --bg-panel: #ffffff;
+  --bg-input: #faf8f4;
+  --bg-input-focus: #f5f2ec;
+  --border: #ddd8cf;
+  --border-focus: #c47a2a;
+  --text-primary: #1a1816;
+  --text-secondary: #6b6560;
+  --text-muted: #a9a39a;
+  --accent: #c47a2a;
+  --accent-dim: rgba(196, 122, 42, 0.12);
+  --danger: #c53030;
+  --radius: 6px;
+  --font-ui: 'Inter', 'Noto Sans SC', -apple-system, sans-serif;
+  --font-mono: 'Fira Code', 'SF Mono', monospace;
+}
+
+/* ─── Reset ──────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-primary);
+  background: var(--bg-app);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── App Layout ─────────────────────────── */
+#app, .app {
+  display: grid;
+  grid-template-columns: 540px 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "topbar topbar"
+    "left   right";
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ─── Top Bar ────────────────────────────── */
+.topbar {
+  grid-area: topbar;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-panel);
+}
+
+.topbar-title {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.topbar-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.status-fontsize {
+  background: var(--accent-dim);
+  color: var(--accent);
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+.status-overflow {
+  color: var(--danger);
+  font-weight: 600;
+  display: none;
+}
+
+.status-overflow.visible {
+  display: inline;
+}
+
+.btn-print {
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  padding: 6px 16px;
+  border-radius: var(--radius);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.btn-print:hover {
+  opacity: 0.85;
+}
+
+/* ─── Left Panel ─────────────────────────── */
+.left-panel {
+  grid-area: left;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  background: var(--bg-panel);
+  overflow: hidden;
+  min-height: 0;
+  min-width: 0;
+}
+
+.textarea-wrapper {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  overflow: hidden;
+}
+
+.textarea-header {
+  padding: 12px 16px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.input-textarea {
+  flex: 1 1 0;
+  width: 100%;
+  padding: 0 16px 16px;
+  background: transparent;
+  border: none;
+  resize: none;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  outline: none;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.input-textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* ─── Controls ───────────────────────────── */
+.controls-section {
+  flex-shrink: 0;
+  border-top: 1px solid var(--border);
+  padding: 12px 16px;
+}
+
+.controls-header {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.control-group {
+  margin-bottom: 8px;
+}
+
+.control-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.control-label-text {
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.control-value {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+}
+
+.control-select {
+  width: 100%;
+  padding: 6px 8px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  outline: none;
+  cursor: pointer;
+}
+
+.control-select:focus {
+  border-color: var(--border-focus);
+}
+
+.control-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  outline: none;
+  margin: 4px 0;
+}
+
+.control-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.control-range::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* ─── Right Panel (A4 Preview) ───────────── */
+.right-panel {
+  grid-area: right;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  padding: 30px;
+  background: var(--bg-app);
+  min-height: 0;
+  min-width: 0;
+  /* subtle cross pattern */
+  background-image:
+    radial-gradient(circle, #d5d0c6 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* ─── A4 Wrapper (handles scaling) ────────── */
+.a4-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* ─── A4 Page ────────────────────────────── */
+.a4-page {
+  width: 210mm;
+  height: 297mm;
+  overflow: hidden;
+  box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-family: 'Noto Sans SC', 'Inter', sans-serif;
+
+  /* Theme variables (defaults = classic) */
+  --page-bg: #ffffff;
+  --page-text: #1a1a1a;
+  --heading-color: #1a1a1a;
+  --link-color: #1a5fb4;
+  --code-bg: #f6f8fa;
+  --code-inline-bg: #f0f2f5;
+  --quote-border: #d0d0d0;
+  --quote-text: #555;
+  --hr-color: #d8dee4;
+  --table-border: #d8dee4;
+  --table-header-bg: #f6f8fa;
+
+  /* Layout variables (set by JS) */
+  --ps: 0.5em;
+  --fi: 0;
+
+  background: var(--page-bg);
+  color: var(--page-text);
+  box-shadow:
+    0 2px 16px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+.a4-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #b0a898;
+  font-size: 14px;
+  font-style: italic;
+  pointer-events: none;
+}
+
+/* ─── A4 Typography (all em-based) ───────── */
+.a4-page h1, .a4-page h2, .a4-page h3,
+.a4-page h4, .a4-page h5, .a4-page h6 {
+  color: var(--heading-color);
+  line-height: inherit;
+}
+
+.a4-page h1 {
+  font-size: 2em;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 0.33em;
+}
+
+.a4-page h2 {
+  font-size: 1.5em;
+  font-weight: 700;
+  margin-top: 0.67em;
+  margin-bottom: 0.33em;
+}
+
+.a4-page h3 {
+  font-size: 1.17em;
+  font-weight: 700;
+  margin-top: 0.67em;
+  margin-bottom: 0.33em;
+}
+
+.a4-page h4 {
+  font-size: 1em;
+  font-weight: 700;
+  margin-top: 0.5em;
+  margin-bottom: 0.25em;
+}
+
+.a4-page h5 {
+  font-size: 0.83em;
+  font-weight: 700;
+  margin-top: 0.5em;
+  margin-bottom: 0.25em;
+}
+
+.a4-page h6 {
+  font-size: 0.67em;
+  font-weight: 700;
+  margin-top: 0.5em;
+  margin-bottom: 0.25em;
+}
+
+.a4-page p {
+  margin: var(--ps) 0;
+  text-indent: var(--fi);
+  line-height: inherit;
+}
+
+.a4-page h1:first-child,
+.a4-page h2:first-child,
+.a4-page h3:first-child,
+.a4-page p:first-child {
+  margin-top: 0;
+}
+
+.a4-page ul, .a4-page ol {
+  padding-left: 2em;
+  margin: var(--ps) 0;
+  line-height: inherit;
+}
+
+.a4-page li {
+  margin: 0.15em 0;
+}
+
+.a4-page blockquote {
+  border-left: 3px solid var(--quote-border);
+  padding-left: 1em;
+  margin: var(--ps) 0 var(--ps) 1em;
+  color: var(--quote-text);
+  line-height: inherit;
+}
+
+.a4-page pre {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: var(--code-bg);
+  padding: 0.75em 1em;
+  border-radius: 4px;
+  margin: var(--ps) 0;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: inherit;
+}
+
+.a4-page code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: var(--code-inline-bg);
+  padding: 0.15em 0.35em;
+  border-radius: 3px;
+}
+
+.a4-page pre code {
+  background: none;
+  padding: 0;
+}
+
+.a4-page a {
+  color: var(--link-color);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.a4-page hr {
+  border: none;
+  border-top: 1px solid var(--hr-color);
+  margin: 1em 0;
+}
+
+.a4-page strong { font-weight: 700; }
+.a4-page em { font-style: italic; }
+
+.a4-page table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: var(--ps) 0;
+  font-size: 0.9em;
+}
+
+.a4-page th, .a4-page td {
+  border: 1px solid var(--table-border);
+  padding: 0.35em 0.6em;
+  text-align: left;
+}
+
+.a4-page th {
+  background: var(--table-header-bg);
+  font-weight: 600;
+}
+
+/* ─── Theme: Classic (default, variables set on .a4-page) ── */
+
+/* ─── Theme: Warm Paper ─────────────────── */
+.a4-page.theme-warm {
+  --page-bg: #faf5eb;
+  --page-text: #3c3226;
+  --heading-color: #7a5a2e;
+  --link-color: #a0522d;
+  --code-bg: #f3ead6;
+  --code-inline-bg: #efe5d0;
+  --quote-border: #c8b48a;
+  --quote-text: #6b5a40;
+  --hr-color: #d8ccb0;
+  --table-border: #d8ccb0;
+  --table-header-bg: #f3ead6;
+}
+
+/* ─── Theme: Academic ───────────────────── */
+.a4-page.theme-academic {
+  --page-bg: #ffffff;
+  --page-text: #222222;
+  --heading-color: #1a3055;
+  --link-color: #1a3055;
+  --code-bg: #f0f3f8;
+  --code-inline-bg: #e8ecf4;
+  --quote-border: #1a3055;
+  --quote-text: #444;
+  --hr-color: #1a3055;
+  --table-border: #9aa8c0;
+  --table-header-bg: #e8ecf4;
+}
+
+.a4-page.theme-academic h2 {
+  padding-bottom: 0.15em;
+  border-bottom: 2px solid #1a3055;
+}
+
+.a4-page.theme-academic hr {
+  border-top-width: 2px;
+}
+
+/* ─── Theme: Editorial / Magazine ───────── */
+.a4-page.theme-editorial {
+  --page-bg: #ffffff;
+  --page-text: #1a1a1a;
+  --heading-color: #c0392b;
+  --link-color: #c0392b;
+  --code-bg: #fdf2f0;
+  --code-inline-bg: #fce8e5;
+  --quote-border: #c0392b;
+  --quote-text: #555;
+  --hr-color: #c0392b;
+  --table-border: #e0c4c0;
+  --table-header-bg: #fdf2f0;
+}
+
+.a4-page.theme-editorial h1 {
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.a4-page.theme-editorial blockquote {
+  border-left-width: 4px;
+  font-style: italic;
+}
+
+.a4-page.theme-editorial hr {
+  border-top-width: 3px;
+}
+
+/* ─── Print ──────────────────────────────── */
+@page {
+  size: A4;
+  margin: 0;
+}
+
+@media print {
+  html, body {
+    height: auto;
+    overflow: visible;
+    background: white;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .a4-wrapper, .a4-wrapper * {
+    visibility: visible !important;
+  }
+
+  .a4-wrapper {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 210mm !important;
+    height: 297mm !important;
+  }
+
+  .a4-page {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 210mm;
+    height: 297mm;
+    box-shadow: none;
+    margin: 0;
+    transform: none !important;
+  }
+
+  .a4-placeholder {
+    display: none !important;
+  }
+}
