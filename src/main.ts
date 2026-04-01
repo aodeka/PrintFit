@@ -19,6 +19,10 @@ let textarea: HTMLTextAreaElement
 let fitScale = 1
 let userZoom = 1
 
+// Avatar functionality
+let avatarElement: HTMLImageElement | null = null
+let avatarScaleHandle: HTMLElement | null = null
+
 function buildDOM(): void {
   const app = document.getElementById('app')!
   app.className = 'app'
@@ -29,7 +33,7 @@ function buildDOM(): void {
 
   const title = document.createElement('div')
   title.className = 'topbar-title'
-  title.textContent = '一页印 PrintFit'
+  title.textContent = '文印v1'
 
   const statusArea = document.createElement('div')
   statusArea.className = 'topbar-status'
@@ -113,6 +117,55 @@ function buildDOM(): void {
 
   controlsSection.append(controlsHeader, controlsBody)
   leftPanel.append(textareaWrapper, controlsSection)
+
+  // Avatar upload section
+  const avatarSection = document.createElement('div')
+  avatarSection.className = 'controls-section'
+
+  const avatarHeader = document.createElement('div')
+  avatarHeader.className = 'controls-header'
+  avatarHeader.textContent = '头像设置'
+
+  const avatarBody = document.createElement('div')
+  avatarBody.className = 'avatar-upload'
+
+  const avatarInput = document.createElement('input')
+  avatarInput.type = 'file'
+  avatarInput.accept = 'image/*'
+  avatarInput.style.display = 'none'
+
+  const avatarButton = document.createElement('button')
+  avatarButton.className = 'avatar-button'
+  avatarButton.textContent = '上传头像'
+
+  const avatarClearButton = document.createElement('button')
+  avatarClearButton.className = 'avatar-clear'
+  avatarClearButton.textContent = '清除头像'
+  avatarClearButton.style.display = 'none'
+
+  avatarButton.addEventListener('click', () => avatarInput.click())
+
+  avatarInput.addEventListener('change', (e) => {
+    const file = (e.target as HTMLInputElement).files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        setAvatar(event.target?.result as string)
+        avatarClearButton.style.display = 'inline-block'
+      }
+      reader.readAsDataURL(file)
+    }
+  })
+
+  avatarClearButton.addEventListener('click', () => {
+    clearAvatar()
+    avatarClearButton.style.display = 'none'
+    avatarInput.value = ''
+  })
+
+  avatarBody.append(avatarButton, avatarClearButton)
+  avatarSection.append(avatarHeader, avatarBody)
+  leftPanel.append(avatarSection)
 
   // Right panel
   const rightPanel = document.createElement('div')
@@ -305,6 +358,147 @@ function applyStyles(settings: StyleSettings, fontSize: number): void {
   a4Page.style.lineHeight = String(settings.lineHeightRatio)
   a4Page.style.setProperty('--ps', `${settings.paragraphSpacing}em`)
   a4Page.style.setProperty('--fi', `${settings.firstLineIndent}em`)
+}
+
+// Avatar functions
+function setAvatar(src: string): void {
+  if (avatarElement) {
+    avatarElement.src = src
+    return
+  }
+
+  // Create avatar wrapper
+  const avatarWrapper = document.createElement('div')
+  avatarWrapper.className = 'avatar-wrapper'
+  avatarWrapper.style.left = '20px'
+  avatarWrapper.style.top = '20px'
+
+  // Create avatar image
+  avatarElement = document.createElement('img')
+  avatarElement.className = 'avatar-image'
+  avatarElement.src = src
+  avatarElement.draggable = false
+
+  // Create scale handle
+  avatarScaleHandle = document.createElement('div')
+  avatarScaleHandle.className = 'avatar-scale-handle'
+
+  avatarWrapper.append(avatarElement, avatarScaleHandle)
+  a4Page.appendChild(avatarWrapper)
+
+  // Setup drag functionality
+  setupAvatarDrag(avatarWrapper, avatarElement)
+  // Setup scale functionality
+  setupAvatarScale(avatarWrapper, avatarScaleHandle)
+}
+
+function clearAvatar(): void {
+  if (avatarElement) {
+    const wrapper = avatarElement.parentElement
+    wrapper?.remove()
+    avatarElement = null
+    avatarScaleHandle = null
+  }
+}
+
+function setupAvatarDrag(wrapper: HTMLElement, img: HTMLImageElement): void {
+  let isDragging = false
+  let startX = 0
+  let startY = 0
+  let startLeft = 0
+  let startTop = 0
+
+  img.addEventListener('mousedown', (e) => {
+    isDragging = true
+    startX = e.clientX
+    startY = e.clientY
+    startLeft = parseInt(wrapper.style.left) || 0
+    startTop = parseInt(wrapper.style.top) || 0
+    e.stopPropagation()
+    e.preventDefault()
+  })
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return
+    
+    const dx = e.clientX - startX
+    const dy = e.clientY - startY
+    
+    // Convert screen pixels to A4 pixels (accounting for scale)
+    const scale = fitScale * userZoom
+    const a4Dx = dx / scale
+    const a4Dy = dy / scale
+    
+    let newLeft = startLeft + a4Dx
+    let newTop = startTop + a4Dy
+    
+    // Constrain to A4 page
+    const pageWidth = a4Page.clientWidth
+    const pageHeight = a4Page.clientHeight
+    const imgWidth = img.offsetWidth
+    const imgHeight = img.offsetHeight
+    
+    newLeft = Math.max(0, Math.min(newLeft, pageWidth - imgWidth))
+    newTop = Math.max(0, Math.min(newTop, pageHeight - imgHeight))
+    
+    wrapper.style.left = `${newLeft}px`
+    wrapper.style.top = `${newTop}px`
+  })
+
+  window.addEventListener('mouseup', () => {
+    isDragging = false
+  })
+}
+
+function setupAvatarScale(wrapper: HTMLElement, handle: HTMLElement): void {
+  let isScaling = false
+  let startX = 0
+  let startY = 0
+  let startWidth = 0
+  let startHeight = 0
+
+  handle.addEventListener('mousedown', (e) => {
+    isScaling = true
+    startX = e.clientX
+    startY = e.clientY
+    startWidth = wrapper.offsetWidth
+    startHeight = wrapper.offsetHeight
+    e.stopPropagation()
+    e.preventDefault()
+  })
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isScaling || !avatarElement) return
+    
+    const dx = e.clientX - startX
+    const dy = e.clientY - startY
+    
+    // Convert screen pixels to A4 pixels
+    const scale = fitScale * userZoom
+    const a4Dx = dx / scale
+    const a4Dy = dy / scale
+    
+    let newWidth = startWidth + a4Dx
+    let newHeight = startHeight + a4Dy
+    
+    // Shift key for aspect ratio
+    if (e.shiftKey) {
+      const ratio = startWidth / startHeight
+      newHeight = newWidth / ratio
+    }
+    
+    // Minimum size
+    const minSize = 30
+    newWidth = Math.max(minSize, newWidth)
+    newHeight = Math.max(minSize, newHeight)
+    
+    avatarElement.style.width = `${newWidth}px`
+    avatarElement.style.height = `${newHeight}px`
+  })
+
+  window.addEventListener('mouseup', () => {
+    isScaling = false
+  })
 }
 
 // Init

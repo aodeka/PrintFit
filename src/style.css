@@ -205,6 +205,48 @@ body {
   padding: 12px 16px;
 }
 
+/* ─── Avatar Upload ─────────────────────── */
+.avatar-upload {
+  display: flex;
+  gap: 8px;
+}
+
+.avatar-button {
+  flex: 1;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.avatar-button:hover {
+  background: var(--bg-input-focus);
+  border-color: var(--border-focus);
+}
+
+.avatar-clear {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.avatar-clear:hover {
+  background: #fee;
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
 .controls-header {
   font-size: 11px;
   font-weight: 600;
@@ -353,6 +395,46 @@ body {
   font-size: 14px;
   font-style: italic;
   pointer-events: none;
+}
+
+/* ─── Avatar on A4 Page ─────────────────── */
+.avatar-wrapper {
+  position: absolute;
+  z-index: 10;
+}
+
+.avatar-image {
+  display: block;
+  max-width: none;
+  max-height: none;
+  cursor: move;
+  pointer-events: auto;
+}
+
+.avatar-scale-handle {
+  position: absolute;
+  bottom: -8px;
+  right: -8px;
+  width: 16px;
+  height: 16px;
+  background: var(--accent);
+  border: 2px solid white;
+  border-radius: 50%;
+  cursor: nwse-resize;
+  pointer-events: auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.avatar-scale-handle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid white;
+  border-bottom: 2px solid white;
 }
 
 /* ─── A4 Typography (all em-based) ───────── */
@@ -724,6 +806,27 @@ body {
   border-top: 1.5px solid #8b6b40;
 }
 
+/* ─── Theme: Elite Red (精英红) ───────────── */
+.a4-page.theme-elite-red {
+  --page-bg: #ffffff;
+  --page-text: #1a1a1a;
+  --heading-color: #1a1a1a;
+  --link-color: #c53030;
+  --code-bg: #fff5f5;
+  --code-inline-bg: #ffe6e6;
+  --quote-border: #c53030;
+  --quote-text: #555;
+  --hr-color: #c53030;
+  --table-border: #e0b4b4;
+  --table-header-bg: #fff5f5;
+}
+
+.a4-page.theme-elite-red h2 {
+  color: #c53030;
+  padding-bottom: 0.2em;
+  border-bottom: 2px solid #c53030;
+}
+
 /* ─── Print ──────────────────────────────── */
 @page {
   size: A4;
@@ -766,5 +869,15 @@ body {
 
   .a4-placeholder {
     display: none !important;
+  }
+
+  /* Hide avatar scale handle in print */
+  .avatar-scale-handle {
+    display: none !important;
+  }
+
+  /* Hide avatar image cursor in print */
+  .avatar-image {
+    cursor: default !important;
   }
 }

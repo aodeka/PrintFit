@@ -19,6 +19,7 @@ const THEME_OPTIONS = [
   { label: '水墨', value: 'ink' },
   { label: '科技', value: 'tech' },
   { label: '牛皮纸', value: 'kraft' },
+  { label: '精英红', value: 'elite-red' },
 ]
 
 const FONT_OPTIONS = [
